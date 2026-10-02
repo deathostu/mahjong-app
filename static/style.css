@@ -1,0 +1,190 @@
+body { background-color: #1a1a1a; color: white; font-family: Arial, sans-serif; margin: 0; padding: 20px; display: flex; justify-content: center; }
+.game-container { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+
+/* --- ЖЕСТКАЯ ФИКСИРОВАННАЯ СЕТКА СТОЛА (ЗАЩИТА ОТ РАСПИРАНИЯ) --- */
+.mahjong-table {
+    display: grid;
+    grid-template-columns: 140px 420px 140px;
+    grid-template-rows: 140px 420px 140px;
+    background-color: #2e6f40;
+    border: 10px solid #1e4629;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    position: relative;
+    width: 700px;
+    height: 700px;
+    box-sizing: border-box;
+}
+
+/* Все игровые зоны строго изолированы внутри своих ячеек */
+.player-zone { 
+    display: flex; 
+    box-sizing: border-box; 
+    position: relative; 
+    justify-content: center; 
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* --- ЦЕНТРАЛЬНАЯ ПАНЕЛЬ И БЛОК ДОРА --- */
+.center-panel { grid-column: 2; grid-row: 2; background-color: #1c4528; border: 3px solid #3c8f53; position: relative; width: 100%; height: 100%; }
+.center-info-core { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); text-align: center; display: flex; flex-direction: column; background-color: rgba(0, 0, 0, 0.2); padding: 8px 16px; border-radius: 6px; }
+
+.dora-dead-wall { position: absolute; top: 8px; right: 8px; display: flex; gap: 1px; background-color: rgba(0,0,0,0.4); padding: 2px; border-radius: 3px; z-index: 10; }
+.dora-dead-wall .tile { width: 14px; height: 19px; }
+
+/* Компас имен */
+.center-name { position: absolute; font-size: 0.8rem; font-weight: bold; white-space: nowrap; background-color: rgba(0, 0, 0, 0.4); padding: 1px 6px; border-radius: 4px; }
+.c-top { top: 6px; left: 50%; transform: translateX(-50%); }
+.c-bottom { bottom: 25px; left: 50%; transform: translateX(-50%); color: #2ecc71; }
+.c-left { left: 6px; top: 50%; transform: translateY(-50%) rotate(90deg); }
+.c-right { right: 6px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+
+/* --- БАЗОВЫЕ ТАЙЛЫ И СБРОСЫ --- */
+.tile { width: 32px; height: 44px; background-image: url('/static/img/Front.svg'); background-size: 100% 100%; background-repeat: no-repeat; display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.3)); }
+.tile img.tile-face { width: 85%; height: 85%; object-fit: contain; padding-bottom: 12%; box-sizing: border-box; }
+.tile.tile-back { background-image: url('/static/img/Back.svg') !important; }
+
+/* Поворот тайла риичи-сброса */
+.tile.tile-rotated { 
+    transform: rotate(-90deg) !important; /* Разворачиваем против часовой стрелки */
+    transform-origin: bottom right;       /* Вращаем вокруг правого нижнего угла */
+    margin-left: -12px;                   /* Компенсируем ширину, сдвигая кость плотно к сету */
+    margin-right: 4px;                    /* Небольшой зазор до следующего тайла */
+    position: relative;
+    top: -12px;                           /* Выравниваем упавший тайл строго по нижней базовой линии */
+}
+
+/* Сетка дискардов (ЖЕСТКИЕ ТУРНИРНЫЕ РАЗМЕРЫ 6Х3 СБРОСОВ К ЦЕНТРУ) */
+.discards-grid { 
+    display: grid; 
+    grid-template-columns: repeat(6, 18px); 
+    grid-auto-rows: 25px; 
+    gap: 1px; 
+    padding: 4px; 
+    background-color: rgba(0,0,0,0.15); 
+    border-radius: 4px; 
+    width: 112px;
+    height: 82px;
+    box-sizing: border-box;
+}
+.discards-grid .tile { width: 18px; height: 25px; }
+
+/* Контейнеры закрытых рук соперников */
+.opponent-hand { display: flex; gap: 1px; position: absolute; z-index: 10; }
+
+/* --- РАССТАНОВКА ИГРОКОВ ВНУТРИ СЕТКИ --- */
+
+/* Игрок СВЕРХУ (Север) */
+.player-top { grid-column: 2; grid-row: 1; flex-direction: column; justify-content: flex-end; }
+.player-top .discards-grid { transform: rotate(180deg); margin-bottom: 8px; }
+#hand-top { top: 15px; }
+#hand-top .tile { width: 20px; height: 28px; }
+
+/* Игрок СЛЕВА (Запад) */
+.player-left { 
+    grid-column: 1; grid-row: 2; 
+    flex-direction: row; 
+    justify-content: flex-end; 
+}
+
+.player-left .discards-grid { 
+    transform: rotate(90deg); 
+    margin-right: -10px; /* Отрицательный отступ прижимает сетку к центру */
+}
+#hand-left { left: 15px; flex-direction: column; }
+#hand-left .tile { width: 28px; height: 20px; transform: rotate(90deg); margin: -3px 0; }
+
+
+/* Игрок СПРАВА (Восток) */
+.player-right { 
+    grid-column: 3; grid-row: 2; 
+    flex-direction: row-reverse; 
+    justify-content: flex-end; 
+}
+/* Смещаем сброс правого игрока влево, ближе к центральной панели */
+.player-right .discards-grid { 
+    transform: rotate(-90deg); 
+    margin-left: -10px; /* Отрицательный отступ прижимает сетку к центру */
+}
+#hand-right { right: 15px; flex-direction: column-reverse; }
+#hand-right .tile { width: 28px; height: 20px; transform: rotate(-90deg); margin: -3px 0; }
+
+/* Вы (Игрок СНИЗУ) */
+.player-bottom { grid-column: 2; grid-row: 3; flex-direction: column-reverse; justify-content: flex-end; }
+.player-bottom .discards-grid { margin-top: 8px; }
+
+
+/* --- 📐 АБСОЛЮТНОЕ ПОЗИЦИОНИРОВАНИЕ МЕЛДСОВ В УГЛАХ СУКНА --- */
+.player-melds { 
+    position: absolute; 
+    display: flex; 
+    gap: 1px; 
+    z-index: 99; 
+    padding: 2px; 
+    border-radius: 4px; 
+    box-sizing: border-box;
+}
+.player-melds:not(:empty) { background-color: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255,255,255,0.05); }
+.player-melds .tile { width: 22px; height: 16px; }
+
+/* Перенесли top-meld строго в верхний ЛЕВЫЙ угол всего стола */
+#melds-top { 
+    top: 15px; 
+    left: 15px; 
+    flex-direction: row;
+}
+#melds-top .tile { width: 16px; height: 22px; }
+#melds-top .tile.tile-rotated { 
+    transform: rotate(-90deg) !important; 
+    transform-origin: bottom right;
+    margin-left: -8px;                   /* Уменьшенный сдвиг под мини-размеры */
+    margin-right: 3px;
+    top: -8px;                           /* Точечное приземление на базовую линию */
+}
+
+/* Левый игрок: в самом ЛЕВЫМ НИЖНЕМ углу стола, вровень со стопкой его руки */
+#melds-left { 
+    bottom: 15px; 
+    left: 15px; 
+    flex-direction: column; 
+}
+#melds-left .tile { transform: rotate(90deg); }
+#melds-left .tile.tile-rotated { transform: rotate(0deg) !important; margin: 3px 0; }
+
+/* Правый игрок: в самом ПРАВОМ ВЕРХНЕМ углу стола, вровень с началом его стопки рук */
+#melds-right { 
+    top: 15px; 
+    right: 15px; 
+    flex-direction: column-reverse; 
+}
+#melds-right .tile { transform: rotate(-90deg); }
+#melds-right .tile.tile-rotated { transform: rotate(0deg) !important; margin: 3px 0; }
+
+/* Ваш блок объявлений (Игрок Снизу): в самом ПРАВОМ НИЖНЕМ углу всего стола */
+#melds-bottom { 
+    bottom: 15px; 
+    right: 15px; 
+    flex-direction: row; /* Меняем на row, чтобы сеты шли слева направо в правильном порядке */
+}
+#melds-bottom .tile { width: 16px; height: 22px; }
+#melds-bottom .tile.tile-rotated { 
+    transform: rotate(-90deg) !important; 
+    transform-origin: bottom right;
+    margin-left: -8px;
+    margin-right: 3px;
+    top: -8px;
+}
+
+/* --- ИНТЕРФЕЙС УПРАВЛЕНИЯ ВНУТРИ ВЕБ-СТРАНИЦЫ --- */
+.player-controls { width: 680px; background-color: #2b2b2b; padding: 12px; border-radius: 6px; display: flex; flex-direction: column; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); user-select:none; }
+.my-hand-container { display: flex; align-items: center; gap: 12px; }
+.my-hand { display: flex; gap: 3px; }
+.tsumo-tile-zone { border-left: 2px dashed #555; padding-left: 12px; height: 44px; }
+.action-buttons button { background-color: #e67e22; color: white; border: none; padding: 6px 14px; font-weight: bold; border-radius: 4px; cursor: pointer; margin: 0 3px; display: inline-flex; align-items: center; gap: 6px; }
+.action-buttons button:hover { background-color: #d35400; }
+.btn-tile-preview { width: 18px; height: 25px; display: inline-block; background-image: url('/static/img/Front.svg') !important; background-size: 100% 100% !important; vertical-align: middle; }
+.btn-tile-preview img.tile-face { width: 85%; height: 85%; object-fit: contain; padding-bottom: 12%; }
+.tile.tile-disabled { opacity: 0.35; filter: grayscale(80%) blur(0.5px); cursor: not-allowed; pointer-events: none; }

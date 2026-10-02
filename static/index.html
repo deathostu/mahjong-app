@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Риичи-Маджонг — Авторизация</title>
+    <style>
+        body { background-color: #1a1a1a; color: white; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-box { background-color: #2b2b2b; padding: 30px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); width: 320px; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; border: 1px solid #444; background-color: #333; color: white; border-radius: 4px; }
+        button { width: 100%; padding: 10px; background-color: #2ecc71; border: none; color: white; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+        button:hover { background-color: #27ae60; }
+        .switch-link { margin-top: 15px; font-size: 0.85rem; color: #3498db; cursor: pointer; user-select: none; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-box">
+        <h2 id="auth-title">Вход в игру</h2>
+        <form id="auth-form">
+            <input type="text" id="username" placeholder="Имя пользователя" required>
+            <input type="password" id="password" placeholder="Пароль" required>
+            <button type="submit" id="auth-btn">Войти</button>
+        </form>
+        <div class="switch-link" id="switch-mode">Нет аккаунта? Зарегистрироваться</div>
+    </div>
+
+    <script>
+        let isLoginMode = true;
+        const modeLink = document.getElementById('switch-mode');
+        const titleEl = document.getElementById('auth-title');
+        const btnEl = document.getElementById('auth-btn');
+        const formEl = document.getElementById('auth-form');
+        const authBox = document.querySelector('.auth-box');
+
+        window.onload = () => {
+            const savedUid = localStorage.getItem('user_id');
+            if (savedUid) {
+                showLobbyMenu();
+            }
+        };
+
+        modeLink.onclick = () => {
+            isLoginMode = !isLoginMode;
+            titleEl.innerText = isLoginMode ? "Вход в игру" : "Регистрация";
+            btnEl.innerText = isLoginMode ? "Войти" : "Создать аккаунт";
+            btnEl.style.backgroundColor = isLoginMode ? "#2ecc71" : "#3498db";
+            modeLink.innerText = isLoginMode ? "Нет аккаунта? Зарегистрироваться" : "Уже есть аккаунт? Войти";
+        };
+
+        formEl.onsubmit = async (e) => {
+            e.preventDefault();
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            
+            const endpoint = isLoginMode ? '/api/login' : '/api/register';
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: u, password: p })
+                });
+                
+                const result = await response.json();
+                if (response.ok) {
+                    localStorage.setItem('user_id', result.id);
+                    localStorage.setItem('username', result.username);
+                    showLobbyMenu();
+                } else {
+                    alert(result.detail || "Произошла ошибка");
+                }
+            } catch (err) {
+                console.error("Ошибка сети:", err);
+                alert("Не удалось связаться с сервером.");
+            }
+        };
+
+        async function showLobbyMenu() {
+            const userId = localStorage.getItem('user_id');
+            const username = localStorage.getItem('username');
+            
+            // Инициализируем объект дефолтными значениями, включая пустой массив мест
+            let stats = { total_games: 0, places:, avg_score: 0 };
+            
+            try {
+                const res = await fetch(`/api/stats/${userId}`);
+                if (res.ok) {
+                    stats = await res.json();
+                }
+            } catch (err) {
+                console.error("Не удалось загрузить статистику:", err);
+            }
+            
+            // Безопасное чтение массива мест с подстраховкой дефолтными нулями
+            const p = (stats.places && stats.places.length === 4) ? stats.places :;
+
+            authBox.innerHTML = `
+                <h2>Лобби Маджонга</h2>
+                <p>Привет, <b>${username}</b>!</p>
+                
+                <div style="background:#1e1e1e; padding:12px; border-radius:6px; margin:15px 0; text-align:left; font-size:0.9rem; border:1px solid #333;">
+                    <div style="text-align:center; font-weight:bold; margin-bottom:8px; color:#f1c40f;">Ваша статистика:</div>
+                    <div style="margin-bottom:4px;">Всего игр: ${stats.total_games || 0}</div>
+                    <div style="margin-bottom:8px;">Средний счёт: ${stats.avg_score || 0}</div>
+                    <div style="border-top:1px solid #333; margin-bottom:8px;"></div>
+                    <div style="display:grid; grid-template-columns: repeat(4, 1fr); text-align:center; gap:4px;">
+                        <div>1-е<br><b style="color:#2ecc71">${p[0]}</b></div>
+                        <div>2-е<br><b style="color:#3498db">${p[1]}</b></div>
+                        <div>3-е<br><b style="color:#f39c12">${p[2]}</b></div>
+                        <div>4-е<br><b style="color:#e74c3c">${p[3]}</b></div>
+                    </div>
+                </div>
+
+                <button onclick="window.location.href='/game'">Сесть за игровой стол</button>
+                <button onclick="logout()" style="background-color:#e74c3c; margin-top:6px;">Выйти</button>
+            `;
+        }
+
+        window.logout = () => {
+            localStorage.clear();
+            window.location.reload();
+        };
+    </script>
+</body>
+</html>

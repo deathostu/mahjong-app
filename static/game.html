@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Риичи-Маджонг — Игровой стол</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="mahjong-table">
+            
+            <!-- АБСОЛЮТНЫЕ УГЛОВЫЕ КОНТЕЙНЕРЫ ДЛЯ ОБЪЯВЛЕНИЙ (MELDS) -->
+            <div class="player-melds" id="melds-top"></div>
+            <div class="player-melds" id="melds-left"></div>
+            <div class="player-melds" id="melds-right"></div>
+            <div class="player-melds" id="melds-bottom"></div>
+
+            <!-- Соперник Сверху (Север) -->
+            <div class="player-zone player-top" id="zone-top">
+                <div class="discards-grid"></div>
+                <div class="opponent-hand" id="hand-top"></div>
+            </div>
+
+            <!-- Соперник Слева (Запад) -->
+            <div class="player-zone player-left" id="zone-left">
+                <div class="opponent-hand" id="hand-left"></div>
+                <div class="discards-grid"></div>
+            </div>
+
+            <!-- Центральный блок (Компас Ветров) -->
+            <div class="center-panel">
+                <div class="center-name c-top" id="c-name-top">Ожидание...</div>
+                <div class="center-name c-left" id="c-name-left">Ожидание...</div>
+                <div class="center-name c-right" id="c-name-right">Ожидание...</div>
+                <div class="center-name c-bottom" id="c-name-bottom">Вы</div>
+                
+                <div class="center-info-core">
+                    <div id="round-name" style="font-size: 1.3rem; font-weight: bold; color: #f1c40f;">E1</div>
+                    <div style="font-size: 0.8rem;">Стена: <span id="wall-count">0</span></div>
+                    <div style="font-size: 0.8rem;">Риичи: <span id="riichi-count">0</span></div>
+                </div>
+                
+                <!-- Индикаторы Доры в углу центрального квадрата -->
+                <div class="dora-dead-wall" id="dora-indicator"></div>
+                
+                <div id="game-status" style="position: absolute; bottom: 4px; font-size: 0.7rem; color: #f1c40f; text-align: center; width: 100%;">Статус: Ожидание...</div>
+            </div>
+
+            <!-- Соперник Справа (Восток) -->
+            <div class="player-zone player-right" id="zone-right">
+                <div class="opponent-hand" id="hand-right"></div>
+                <div class="discards-grid"></div>
+            </div>
+
+            <!-- Вы (Игрок Снижу) -->
+            <div class="player-zone player-bottom" id="zone-bottom">
+                <div class="discards-grid"></div>
+            </div>
+
+        </div>
+
+
+        <!-- Панель управления игрока (Кнопки объявлений и ваша рука) -->
+        <div class="player-controls">
+            <div class="action-buttons" id="action-buttons">
+                <!-- Здесь динамически будут появляться кнопки Риичи, Пон, Чи, Цумо -->
+            </div>
+            <div class="my-hand-container">
+                <div class="my-hand" id="my-hand"></div>
+                <div class="tsumo-tile-zone" id="tsumo-tile"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
