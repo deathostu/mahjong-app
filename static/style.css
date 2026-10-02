@@ -50,11 +50,11 @@ body { background-color: #1a1a1a; color: white; font-family: Arial, sans-serif; 
 /* Поворот тайла риичи-сброса */
 .tile.tile-rotated { 
     transform: rotate(-90deg) !important; /* Разворачиваем против часовой стрелки */
-    transform-origin: bottom right;       /* Вращаем вокруг правого нижнего угла */
+    transform-origin: center center;       /* Вращаем вокруг правого нижнего угла */
     margin-left: -12px;                   /* Компенсируем ширину, сдвигая кость плотно к сету */
     margin-right: 4px;                    /* Небольшой зазор до следующего тайла */
     position: relative;
-    top: -12px;                           /* Выравниваем упавший тайл строго по нижней базовой линии */
+    top: 0px;                           /* Выравниваем упавший тайл строго по нижней базовой линии */
 }
 
 /* Сетка дискардов (ЖЕСТКИЕ ТУРНИРНЫЕ РАЗМЕРЫ 6Х3 СБРОСОВ К ЦЕНТРУ) */
@@ -135,14 +135,15 @@ body { background-color: #1a1a1a; color: white; font-family: Arial, sans-serif; 
     top: 15px; 
     left: 15px; 
     flex-direction: row;
+    transform: rotate(180deg) !important;
 }
 #melds-top .tile { width: 16px; height: 22px; }
 #melds-top .tile.tile-rotated { 
     transform: rotate(-90deg) !important; 
     transform-origin: bottom right;
-    margin-left: -8px;                   /* Уменьшенный сдвиг под мини-размеры */
-    margin-right: 3px;
-    top: -8px;                           /* Точечное приземление на базовую линию */
+    margin-left: 6px;                   /* Уменьшенный сдвиг под мини-размеры */
+    margin-right: 0px;
+    top: -17px;                           /* Точечное приземление на базовую линию */
 }
 
 /* Левый игрок: в самом ЛЕВЫМ НИЖНЕМ углу стола, вровень со стопкой его руки */
@@ -152,7 +153,11 @@ body { background-color: #1a1a1a; color: white; font-family: Arial, sans-serif; 
     flex-direction: column; 
 }
 #melds-left .tile { transform: rotate(90deg); }
-#melds-left .tile.tile-rotated { transform: rotate(0deg) !important; margin: 3px 0; }
+#melds-left .tile.tile-rotated { 
+    transform: rotate(0deg) !important; 
+    margin-left: -2px;
+
+}
 
 /* Правый игрок: в самом ПРАВОМ ВЕРХНЕМ углу стола, вровень с началом его стопки рук */
 #melds-right { 
@@ -161,7 +166,10 @@ body { background-color: #1a1a1a; color: white; font-family: Arial, sans-serif; 
     flex-direction: column-reverse; 
 }
 #melds-right .tile { transform: rotate(-90deg); }
-#melds-right .tile.tile-rotated { transform: rotate(0deg) !important; margin: 3px 0; }
+#melds-right .tile.tile-rotated { 
+    transform: rotate(0deg) !important; 
+    margin-left: -2px; 
+}
 
 /* Ваш блок объявлений (Игрок Снизу): в самом ПРАВОМ НИЖНЕМ углу всего стола */
 #melds-bottom { 
@@ -173,9 +181,10 @@ body { background-color: #1a1a1a; color: white; font-family: Arial, sans-serif; 
 #melds-bottom .tile.tile-rotated { 
     transform: rotate(-90deg) !important; 
     transform-origin: bottom right;
-    margin-left: -8px;
-    margin-right: 3px;
-    top: -8px;
+    margin-left: 0px;
+    margin-right: 0px;
+    top: -19px;
+    width: 22px;
 }
 
 /* --- ИНТЕРФЕЙС УПРАВЛЕНИЯ ВНУТРИ ВЕБ-СТРАНИЦЫ --- */
